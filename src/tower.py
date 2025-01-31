@@ -1,6 +1,7 @@
 import pygame
 from pygame import Rect, Color, draw
 from src.constants import *
+from src.utils import draw_text_center
 
 class TroopTower:
     rect: Rect
@@ -27,10 +28,3 @@ class TroopTower:
             self.time_since_last_prod = 0
             self.n_troops += 1
 
-def draw_text_center(surface, text: str, x: int, y: int, color: Color):
-    font = pygame.font.Font(None, 42)
-    text = font.render(text, True, color)
-    textpos = text.get_rect(
-        centerx=x,
-        centery=y)
-    surface.blit(text, textpos)

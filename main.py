@@ -5,6 +5,7 @@ from pygame import Vector2
 vec2 = Vector2
 
 from src.tower import TroopTower
+from src.utils import draw_text_center
 from src.constants import *
 
 class InputState(enum.Enum):
@@ -21,6 +22,7 @@ dt = 0
 
 drag_start: tuple[int, int] = 0, 0
 drag_end  : tuple[int, int] = 0, 0
+troops_to_be_sent: int = 0
 
 input_state = InputState.Idle
 
@@ -47,20 +49,26 @@ def get_tower_at(pos) -> TroopTower | None:
 
 def send_troops(t1, t2):
     if t1.color != p_color: return
-    if t1.n_troops <= 0: return
+    if troops_to_be_sent <= 0: return
 
-    troops = t1.n_troops // 2
-    t1.n_troops -= troops
+    t1.n_troops -= troops_to_be_sent
     if t1.color == t2.color:
-        t2.n_troops += troops
+        t2.n_troops += troops_to_be_sent
     else:
-        t2.n_troops -= troops
+        t2.n_troops -= troops_to_be_sent
         if t2.n_troops <= 0:
             t2.n_troops *= -1
             t2.color = p_color
 
-def show_drag(start_pos, end_pos):
+def show_drag(start_pos, end_pos) -> None:
     pygame.draw.line(screen, "white", start_pos, end_pos)
+
+def show_num_troops() -> None:
+    assert t
+    draw_text_center(screen, troops_to_be_sent,
+        screen.get_width() - 50,
+        screen.get_height() // 2,
+        "white")
 
 while running:
     screen.fill(bg_color)
@@ -71,20 +79,36 @@ while running:
         
         # Left click (pressed)
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            if input_state == InputState.Idle and get_tower_at(event.pos):
-                drag_start = event.pos
+            
+            # Drag (Source selected)
+            if input_state == InputState.Idle:
+                if t := get_tower_at(event.pos):
+                    drag_start = event.pos
+                    troops_to_be_sent = t.n_troops
+                    source_tower = t
+                    input_state = InputState.DraggingTroops
+                    
+            # Send troops confirmation
             elif input_state == InputState.SelectingTroops:
                 input_state = InputState.Idle
-                if t2 := get_tower_at(drag_end):
+                source_tower = t
+                if target_tower := get_tower_at(drag_end):
                     assert drag_start is not None
-                    t1 = get_tower_at(drag_start)
-                    send_troops(t1, t2)
+                    send_troops(source_tower, target_tower)
         
         # Left click (released)
         if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+            
+            # Drag (Target selected)
             if input_state == InputState.DraggingTroops:
                 drag_end = event.pos
                 input_state = InputState.SelectingTroops
+        
+        # Mouse wheel
+        if event.type == pygame.MOUSEWHEEL and input_state == InputState.SelectingTroops:
+            n = troops_to_be_sent + event.y
+            troops_to_be_sent = max(min(n, source_tower.n_troops), 0)
+            
 
     keys = pygame.key.get_pressed()
     if keys[pygame.K_q]:
@@ -101,6 +125,7 @@ while running:
             show_drag(drag_start, pygame.mouse.get_pos())
         case InputState.SelectingTroops:
             show_drag(drag_start, drag_end)
+            show_num_troops()
         case _:
             assert input_state == InputState.Idle, "Unknown input_state"
 
