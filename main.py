@@ -1,10 +1,11 @@
-from random import randint
 import enum
 import pygame
 from pygame import Vector2
 vec2 = Vector2
 
+from src.levels import towers, get_tower_at
 from src.tower import TroopTower
+from src.screen import screen
 from src.utils import draw_text_center
 from src.constants import *
 
@@ -13,8 +14,6 @@ class InputState(enum.Enum):
     DraggingTroops = enum.auto()
     SelectingTroops = enum.auto()
 
-pygame.init()
-screen = pygame.display.set_mode((1280, 720))
 clock = pygame.time.Clock()
 FPS = 60
 running = True
@@ -25,27 +24,6 @@ drag_end  : tuple[int, int] = 0, 0
 troops_to_be_sent: int = 0
 
 input_state = InputState.Idle
-
-w = screen.get_width()
-h = screen.get_height()
-towers = [
-        TroopTower(
-            randint(w // 2, w - tower_size),
-            randint(h // 2, h - tower_size),
-            p_color)
-        for _ in range(5)
-    ] + [
-        TroopTower(
-            randint(0, w // 2 - tower_size),
-            randint(0, h // 2 - tower_size),
-            enemy_color)
-        for _ in range(3)
-    ]
-
-def get_tower_at(pos) -> TroopTower | None:
-    for t in towers:
-        if t.rect.collidepoint(pos):
-            return t
 
 def send_troops(t1, t2):
     if t1.color != p_color: return
