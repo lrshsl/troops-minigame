@@ -54,10 +54,10 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        
+
         # Left click (pressed)
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            
+
             # Drag (Source selected)
             if input_state == InputState.Idle:
                 t = get_tower_at(event.pos)
@@ -67,27 +67,27 @@ while running:
                     troops_to_be_sent = t.n_troops
                     source_tower = t
                     input_state = InputState.DraggingTroops
-                    
+
             # Send troops confirmation
             elif input_state == InputState.SelectingTroops:
                 input_state = InputState.Idle
                 if target_tower := get_tower_at(drag_end):
                     assert drag_start is not None
                     send_troops(source_tower, target_tower)
-        
+
         # Left click (released)
         if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-            
+
             # Drag (Target selected)
             if input_state == InputState.DraggingTroops:
                 drag_end = event.pos
                 input_state = InputState.SelectingTroops
-        
+
         # Mouse wheel
         if event.type == pygame.MOUSEWHEEL and input_state == InputState.SelectingTroops:
             n = troops_to_be_sent + event.y
             troops_to_be_sent = max(min(n, source_tower.n_troops), 0)
-            
+
 
     keys = pygame.key.get_pressed()
     if keys[pygame.K_q]:
