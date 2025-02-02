@@ -27,6 +27,11 @@ towers = [
         for _ in range(5)
     ]
 
+def get_tower_index_at(pos) -> int | None:
+    for i, t in enumerate(towers):
+        if t.rect.collidepoint(pos):
+            return i
+
 def get_tower_at(pos) -> TroopTower | None:
     for t in towers:
         if t.rect.collidepoint(pos):

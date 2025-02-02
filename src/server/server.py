@@ -18,9 +18,12 @@ def start_server():
         s.listen()
         print(f"Server started, waiting for a connection on {HOST}:{PORT}")
         
+    while True:
         conn, addr = s.accept()  # Accept a new connection
+
         with conn:
             print(f"Connected by {addr}")
+
             while data := conn.recv(128).decode():
                 print(f"Received: {data}")
                 
@@ -32,3 +35,4 @@ def start_server():
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal.SIG_DFL)  # Make sure SIGINT is handled by Python
     start_server()
+
