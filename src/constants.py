@@ -1,8 +1,13 @@
 from pygame import Color
 
 bg_color = Color(20, 20, 40)
-p_color = "green"
-enemy_color = "red"
-neutral_color = Color(100, 100, 100)
+p1_color = "green"
+p2_color = "red"
+n_color = Color(100, 100, 100)
 
-tower_size = 50
+W = 100
+H = 100
+
+hmargin = W // 10
+
+tower_size = 5

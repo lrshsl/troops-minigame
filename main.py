@@ -4,11 +4,11 @@ import pygame
 from pygame import Vector2
 vec2 = Vector2
 
-from src.levels import towers, get_tower_at
+from src.levels import towers, get_tower_at, get_tower_index_at
 from src.tower import TroopTower
 from src.screen import screen
 from src.utils import draw_text_center
-from src.server.client import start_client
+from src.client import start_client
 from src.constants import *
 
 class InputState(enum.Enum):
@@ -21,7 +21,6 @@ FPS = 60
 dt = 0
 running = True
 
-
 drag_start: tuple[int, int] = 0, 0
 drag_end  : tuple[int, int] = 0, 0
 troops_to_be_sent: int = 0
@@ -32,7 +31,9 @@ def send_troops(s, t1, t2):
     if t1.color != p_color: return
     if troops_to_be_sent <= 0: return
 
-    s.sendall(f"send {t1} {t2}\n".encode())
+    id1 = get_tower_index_at((t1.rect.x, t1.rect.y))
+    id2 = get_tower_index_at((t2.rect.x, t2.rect.y))
+    s.sendall(f"send {troops_to_be_sent} {id1} {id2}\n".encode())
 
     t1.n_troops -= troops_to_be_sent
     if t1.color == t2.color:

@@ -1,29 +1,25 @@
 from random import randint
 
-from src.screen import screen
 from src.tower import TroopTower
 from src.constants import *
 
-_w = screen.get_width()
-_h = screen.get_height()
-hmargin = _w // 10
 towers = [
         TroopTower(
-            randint(tower_size, _w // 3 - hmargin),
-            randint(tower_size, _h - tower_size),
-            p_color)
+            randint(tower_size, W // 3 - hmargin),
+            randint(tower_size, H - tower_size),
+            p1_color)
         for _ in range(5)
     ] + [
         TroopTower(
-            randint(_w // 3 + hmargin, _w * 2 // 3 - hmargin),
-            randint(tower_size, _h - tower_size),
-            neutral_color)
+            randint(W // 3 + hmargin, W * 2 // 3 - hmargin),
+            randint(tower_size, H - tower_size),
+            n_color)
         for _ in range(5)
     ] + [
         TroopTower(
-            randint(_w * 2 // 3 + hmargin, _w - tower_size),
-            randint(tower_size, _h - tower_size),
-            enemy_color)
+            randint(W * 2 // 3 + hmargin, W - tower_size),
+            randint(tower_size, H - tower_size),
+            p2_color)
         for _ in range(5)
     ]
 
